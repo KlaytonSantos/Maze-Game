@@ -5,13 +5,19 @@
 package labirintogame;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 
-public class LabirintoGame extends Canvas implements Runnable {
+public class LabirintoGame extends Canvas implements Runnable, KeyListener {
 
     public static JFrame frame;
     public boolean isRunning = true;
@@ -20,11 +26,16 @@ public class LabirintoGame extends Canvas implements Runnable {
     public static int altura = 135;
     public static int escala = 4;
     
+    
     public static BufferedImage image;
+    public int x,y;
+    public boolean direita, esquerda, cima, baixo;
+    
     
     public LabirintoGame(){
-        this.setPreferredSize(new Dimension(240*3, 160*3));
-       
+        addKeyListener(this);
+        this.setPreferredSize(new Dimension(largura*escala, altura*escala));
+        image = new BufferedImage(largura*escala, altura*escala, BufferedImage.TYPE_INT_RGB);
         iniFrame();
     
     
@@ -61,10 +72,35 @@ public class LabirintoGame extends Canvas implements Runnable {
         
     }
     public void tick(){
-        
+        if(direita){
+            x++;
+        }else if(esquerda){
+            x--;
+        }
+        if(baixo){
+            y++;
+        }else if(cima){
+            y--;
+        }
     }
     public void render(){
+        BufferStrategy bs = this.getBufferStrategy();
+        if(bs == null){
+            this.createBufferStrategy(3);
+            return;
+        }
+        requestFocus();
+        Graphics g = bs.getDrawGraphics();
         
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0,largura*escala, altura*escala);
+        g.setColor(Color.red);
+        g.setFont(new Font("Arial", Font.BOLD, 50));
+        g.drawString("Olá", 150, 50);
+        g.setColor(Color.white);
+        g.fillRect(x, y, 64, 64);
+        
+        bs.show();
     }
     
     @Override
@@ -93,6 +129,36 @@ public class LabirintoGame extends Canvas implements Runnable {
             }
         }
         stop();
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+       if(e.getKeyCode() == KeyEvent.VK_D)
+           direita = true;
+     else if(e.getKeyCode() == KeyEvent.VK_A)
+           esquerda = true;
+       if(e.getKeyCode() == KeyEvent.VK_W)
+           cima = true;
+      else if(e.getKeyCode() == KeyEvent.VK_S)
+           baixo = true;
+           
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+       if(e.getKeyCode() == KeyEvent.VK_D)
+           direita = false;
+     else if(e.getKeyCode() == KeyEvent.VK_A)
+           esquerda = false;
+       if(e.getKeyCode() == KeyEvent.VK_W)
+           cima = false;
+      else if(e.getKeyCode() == KeyEvent.VK_S)
+           baixo = false;
     }
 
   
